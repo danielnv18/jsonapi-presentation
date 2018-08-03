@@ -28,7 +28,7 @@
 					<h1>Creando un Rest API con JSON api</h1>
 				</section>
 				<section>
-					#me
+					<h1>#me</h1>
 				</section>
 
 				<section>
@@ -50,11 +50,40 @@
 					<section>
 						<h3>RESTful Web Services</h3>
 						<ul>
-							<li>Es complejo de configurar</li>
-							<li>No soporta listas</li>
+							<li class="fragment">Es complejo de configurar</li>
+							<li class="fragment">No soporta listas</li>
+							<li class="fragment">Hay que hacer un request por cada recurso</li>
+							<li class="fragment">Multiples request para obtener multiples recursos</li>
+							<li class="fragment">Exceso de informacion</li>
 						</ul>
 						<aside class="notes">
 							<p>Para hacer un listado de contenido hay que hacer vistas y puede que tengan una estructura completamente diferente.</p>
+						</aside>
+					</section>
+					<section>
+						<h3>Ejemplo muy simple</h2>
+						<h4>Un blog post</h4>
+						<ol class="fragment">
+							<li>GET articles/12</li>
+							<ol>
+								<li> GET articles/12 => tags/34</li>
+								<li> GET articles/12 => tags/88</li>
+								<li> GET articles/12 => users/88</li>
+								<ol>
+									<li>GET articles/12 => users/88 => images/5</li>
+								</ol>
+								<li>GET articles/12/comments</li>
+								<li>GET articles/12 => comment/2</li>
+								<ol>
+									<li> articles/12 => comment/2 => user/8</li>
+									<ol>
+										<li> GET articles/12 => comment/2 => user/8 => image/9</li>
+									</ol>
+								</ol>
+							</ol>
+						</ol>
+						<aside class="notes">
+							<p>Esto no solo aplica a REST que esta en el core sino a cualquier REST tradicional</p>
 						</aside>
 					</section>
 				</section>
@@ -69,11 +98,50 @@
 					<section>
 						<h3>REST</h3>
 						<ul>
-							<li>GET - Obtener</li>
-							<li>POST - Crear</li>
-							<li>PATCH - Actualizar</li>
-							<li>DELTE - borrar</li>
+							<li class="fragment">GET - Obtener</li>
+							<li class="fragment">POST - Crear</li>
+							<li class="fragment">PATCH - Actualizar</li>
+							<li class="fragment">DELETE - borrar</li>
 						</ul>
+					</section>
+					<section>
+						<h3>Request</h3>
+						<pre><code class="hljs" data-trim contenteditable>
+							GET /articles HTTP/1.1
+							Accept: application/vnd.api+json
+						</code></pre>
+						<aside class="notes">
+							<p>Demostrar lijeramente con Postman ejemplos de request</p>
+						</aside>
+					</section>
+					<section>
+						<h3>Response</h3>
+						<pre><code class="hljs" data-trim contenteditable>
+							{
+								“data”: {
+									“type”: “articles”,
+									“id”: “1”,
+									“attributes”: {…},
+									“relationships”: {…},
+									“links”: {…},
+								}
+								“meta”: {…}
+							}
+						</code></pre>
+					</section>
+					<section>
+						<h3>Response</h3>
+						<pre><code class="hljs" data-trim contenteditable>
+							{
+								…
+								“attributes”: {
+									“title”: “Drupal 8!”,
+									“body”: “Lorem ipsum”
+									…
+								},
+								…
+						  }
+						</code></pre>
 					</section>
 				</section>
 
@@ -82,13 +150,40 @@
 						<h2>Extra features</h2>
 					</section>
 					<section>
+						<h3>Problemas Originales</h3>
+						<p>❌ Multiples request para multiples recursos</p>
+						<p>❌ Execeso de informacion</p>
+						<p>❌ Multiples request para multiples recursos</p>
+					</section>
+					<section>
 						<h3>Resource embedding</h3>
+						<div  style="color: yellow; text-align: left">
+								<p>GET /articles/12? <br> <b>
+									&nbsp;&nbsp;&nbsp;&nbsp;include=author,author.pic,<br>
+									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tags,<br>
+									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;comment,comment.author,<br>
+									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;comment.author.pic</b></p>
+						</div>
+						<aside class="notes">
+							<p>de esta manera en vez de hacer muchos request simplemente se hace uno solo</p>
+						</aside>
 					</section>
 					<section>
 						<h3>Sparse fieldsets</h3>
+						<div  style="color: yellow; text-align: left">
+							<p>GET /articles/12? <br> <b>
+								&nbsp;&nbsp;&nbsp;&nbsp;fields[node--articles]=<br>
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;title,<br>
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;created</b></p>
+					</div>
 					</section>
 					<section>
 						<h3>Collections & Fields</h3>
+							<p style="text-align: left"><span style="color: yellow; text-align: left">GET /articles/12?</span>  <br> <b>
+								<span style="color: #268bd2;">&nbsp;&nbsp;&nbsp;&nbsp;filter[field_tags.name][value]=Drupal&</span><br>
+								<span style="color: #268bd2;">&nbsp;&nbsp;&nbsp;&nbsp;filter[author.name][value]=editor&</span><br>
+								<span style="color: #d33682;">&nbsp;&nbsp;&nbsp;&nbsp;include=field_tags,field_tags.name,comments&</span><br>
+								<span style="color: #2aa198;">&nbsp;&nbsp;&nbsp;&nbsp;fields[comments]=name,albums,members</span></b></p>
 					</section>
 				</section>
 
@@ -99,14 +194,10 @@
 		<script src="js/reveal.js"></script>
 
 		<script>
-			// More info about config & dependencies:
-			// - https://github.com/hakimel/reveal.js#configuration
-			// - https://github.com/hakimel/reveal.js#dependencies
 			Reveal.initialize({
 				controls: true,
 				progress: true,
 				history: true,
-				center: true,
 				transition: 'slide', // none/fade/slide/convex/concave/zoom
 				dependencies: [
 					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
